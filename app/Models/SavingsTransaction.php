@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SavingsTransaction extends Model
 {
-    protected $fillable = ['savings_target_id', 'amount', 'date', 'note'];
+    protected $fillable = ['savings_target_id', 'account_id', 'amount', 'date', 'note'];
+
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
+    }
 
     protected $casts = [
         'date' => 'date',

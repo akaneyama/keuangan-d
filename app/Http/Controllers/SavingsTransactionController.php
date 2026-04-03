@@ -12,6 +12,7 @@ class SavingsTransactionController extends Controller
     {
         $validated = $request->validate([
             'savings_target_id' => 'required|exists:savings_targets,id',
+            'account_id' => 'required|exists:accounts,id',
             'amount' => 'required|numeric|min:1',
             'date' => 'required|date',
             'note' => 'nullable|string',
@@ -22,8 +23,12 @@ class SavingsTransactionController extends Controller
 
         $transaction = SavingsTransaction::create($validated);
 
-        // Auto update current_amount
-        $target->current_amount += $transaction->amount;
+        // Auto update current_amount in Target
+        $target->increment('current_amount', $transaction->amount);
+        
+        // Auto update current balance in Account
+        $account = \App\Models\Account::findOrFail($validated['account_id']);
+        $account->decrement('balance', $transaction->amount);
         
         if ($target->current_amount >= $target->target_amount) {
             $target->status = 'completed';
@@ -39,10 +44,18 @@ class SavingsTransactionController extends Controller
         if ($target->user_id !== auth()->id()) abort(403);
 
         $amount = $savingsTransaction->amount;
+        $accountId = $savingsTransaction->account_id;
         $savingsTransaction->delete();
 
-        // Reduce amount
-        $target->current_amount -= $amount;
+        // Reduce amount in Target
+        $target->decrement('current_amount', $amount);
+        
+        // Revert balance in Account
+        if ($accountId) {
+            $account = \App\Models\Account::findOrFail($accountId);
+            $account->increment('balance', $amount);
+        }
+
         if ($target->current_amount < $target->target_amount) {
             $target->status = 'ongoing';
         }

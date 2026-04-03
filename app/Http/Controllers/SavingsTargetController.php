@@ -49,10 +49,12 @@ class SavingsTargetController extends Controller
     {
         if ($savingsTarget->user_id !== auth()->id()) abort(403);
         $savingsTarget->load(['transactions' => function($q) {
-            $q->latest('date');
+            $q->with('account')->latest('date');
         }]);
         
-        return view('savings_targets.show', compact('savingsTarget'));
+        $accounts = \App\Models\Account::ownedByUser()->get();
+        
+        return view('savings_targets.show', compact('savingsTarget', 'accounts'));
     }
 
     public function edit(SavingsTarget $savingsTarget)

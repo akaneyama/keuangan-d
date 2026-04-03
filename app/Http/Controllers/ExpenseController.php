@@ -55,21 +55,45 @@ class ExpenseController extends Controller
 
     public function create()
     {
-        $categories = Category::ownedByUser()->where('type', 'expense')->get();
-        return view('expenses.create', compact('categories'));
+        $categories = \App\Models\Category::ownedByUser()->where('type', 'expense')->get();
+        $accounts = \App\Models\Account::ownedByUser()->get();
+        $savingsTargets = \App\Models\SavingsTarget::ownedByUser()->where('status', 'ongoing')->get();
+        
+        return view('expenses.create', compact('categories', 'accounts', 'savingsTargets'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
+            'account_id' => 'required|exists:accounts,id',
+            'savings_target_id' => 'nullable|exists:savings_targets,id',
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
             'description' => 'nullable|string',
         ]);
         
         $validated['user_id'] = auth()->id();
-        Expense::create($validated);
+        $expense = Expense::create($validated);
+
+        // Update Account Balance
+        $account = \App\Models\Account::findOrFail($validated['account_id']);
+        $account->decrement('balance', $validated['amount']);
+
+        // Update Savings Target if applicable
+        if ($validated['savings_target_id']) {
+            $target = \App\Models\SavingsTarget::findOrFail($validated['savings_target_id']);
+            $target->decrement('current_amount', $validated['amount']);
+            
+            // Log as a negative transaction for history
+            \App\Models\SavingsTransaction::create([
+                'savings_target_id' => $target->id,
+                'account_id' => $account->id,
+                'amount' => -$validated['amount'],
+                'date' => $validated['date'],
+                'note' => 'Expense: ' . ($validated['description'] ?? 'Withdrawal for expense'),
+            ]);
+        }
 
         return redirect()->route('expenses.index')->with('success', 'Expense recorded successfully.');
     }
@@ -77,8 +101,11 @@ class ExpenseController extends Controller
     public function edit(Expense $expense)
     {
         if ($expense->user_id !== auth()->id()) abort(403);
-        $categories = Category::ownedByUser()->where('type', 'expense')->get();
-        return view('expenses.edit', compact('expense', 'categories'));
+        $categories = \App\Models\Category::ownedByUser()->where('type', 'expense')->get();
+        $accounts = \App\Models\Account::ownedByUser()->get();
+        $savingsTargets = \App\Models\SavingsTarget::ownedByUser()->get(); // show all targets in edit
+
+        return view('expenses.edit', compact('expense', 'categories', 'accounts', 'savingsTargets'));
     }
 
     public function update(Request $request, Expense $expense)
@@ -87,18 +114,55 @@ class ExpenseController extends Controller
 
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
+            'account_id' => 'required|exists:accounts,id',
+            'savings_target_id' => 'nullable|exists:savings_targets,id',
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
             'description' => 'nullable|string',
         ]);
 
+        // Revert old account balance
+        $oldAccount = \App\Models\Account::findOrFail($expense->account_id);
+        $oldAccount->increment('balance', $expense->amount);
+
+        // Revert old savings target if any
+        if ($expense->savings_target_id) {
+            $oldTarget = \App\Models\SavingsTarget::findOrFail($expense->savings_target_id);
+            $oldTarget->increment('current_amount', $expense->amount);
+        }
+
+        // Update expense
         $expense->update($validated);
+
+        // Apply new account balance
+        $newAccount = \App\Models\Account::findOrFail($validated['account_id']);
+        $newAccount->decrement('balance', $validated['amount']);
+
+        // Apply new savings target if any
+        if ($validated['savings_target_id']) {
+            $newTarget = \App\Models\SavingsTarget::findOrFail($validated['savings_target_id']);
+            $newTarget->decrement('current_amount', $validated['amount']);
+        }
+
         return redirect()->route('expenses.index')->with('success', 'Expense updated successfully.');
     }
 
     public function destroy(Expense $expense)
     {
         if ($expense->user_id !== auth()->id()) abort(403);
+        
+        // Revert account balance
+        if ($expense->account_id) {
+            $account = \App\Models\Account::findOrFail($expense->account_id);
+            $account->increment('balance', $expense->amount);
+        }
+
+        // Revert savings target balance
+        if ($expense->savings_target_id) {
+            $target = \App\Models\SavingsTarget::findOrFail($expense->savings_target_id);
+            $target->increment('current_amount', $expense->amount);
+        }
+
         $expense->delete();
         return redirect()->route('expenses.index')->with('success', 'Expense deleted successfully.');
     }

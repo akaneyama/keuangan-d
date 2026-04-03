@@ -10,7 +10,17 @@ class Expense extends Model
 {
     use OwnedByUser;
 
-    protected $fillable = ['user_id', 'category_id', 'amount', 'date', 'description'];
+    protected $fillable = ['user_id', 'category_id', 'account_id', 'savings_target_id', 'amount', 'date', 'description'];
+
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
+    }
+
+    public function savingsTarget(): BelongsTo
+    {
+        return $this->belongsTo(SavingsTarget::class);
+    }
 
     protected $casts = [
         'date' => 'date',

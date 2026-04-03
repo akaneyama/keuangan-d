@@ -8,6 +8,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SavingsTargetController;
 use App\Http\Controllers\SavingsTransactionController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\BudgetController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,6 +22,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('categories', CategoryController::class);
     Route::resource('incomes', IncomeController::class);
     Route::resource('expenses', ExpenseController::class);
+    Route::resource('accounts', AccountController::class);
+    Route::resource('budgets', BudgetController::class);
     
     Route::resource('savings-targets', SavingsTargetController::class);
     Route::resource('savings-transactions', SavingsTransactionController::class)->only(['store', 'destroy']);

@@ -83,6 +83,7 @@
                     <tr class="bg-slate-50/50">
                         <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100/50 italic">Informasi Transaksi</th>
                         <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100/50 italic">Kategori</th>
+                        <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100/50 italic">Dompet</th>
                         <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100/50 italic">Jumlah</th>
                         <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100/50 text-right italic">Aksi</th>
                     </tr>
@@ -107,6 +108,10 @@
                             <span class="inline-flex items-center px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-700 border border-indigo-100">
                                 {{ $income->category->name }}
                             </span>
+                        </td>
+
+                        <td class="px-8 py-6">
+                            <span class="text-xs font-bold text-slate-500 italic">{{ $income->account->name ?? 'Default' }}</span>
                         </td>
 
                         <td class="px-8 py-6">

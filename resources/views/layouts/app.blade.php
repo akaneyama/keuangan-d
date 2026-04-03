@@ -99,6 +99,24 @@
                     <span class="font-semibold tracking-wide">Pengeluaran</span>
                 </a>
 
+                <a href="{{ route('accounts.index') }}" class="group flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 {{ request()->routeIs('accounts.*') ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/30' : 'text-slate-400 hover:bg-slate-800/50 hover:text-indigo-300' }}">
+                    <div class="p-1.5 rounded-lg mr-3 {{ request()->routeIs('accounts.*') ? 'bg-indigo-500 shadow-inner' : 'bg-slate-800 group-hover:bg-slate-700' }} transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                    </div>
+                    <span class="font-semibold tracking-wide">Dompet Saya</span>
+                </a>
+
+                <a href="{{ route('budgets.index') }}" class="group flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 {{ request()->routeIs('budgets.*') ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/30' : 'text-slate-400 hover:bg-slate-800/50 hover:text-indigo-300' }}">
+                    <div class="p-1.5 rounded-lg mr-3 {{ request()->routeIs('budgets.*') ? 'bg-indigo-500 shadow-inner' : 'bg-slate-800 group-hover:bg-slate-700' }} transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <span class="font-semibold tracking-wide">Anggaran Kita</span>
+                </a>
+
                 <a href="{{ route('savings-targets.index') }}" class="group flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 {{ request()->routeIs('savings-targets.*') ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/30' : 'text-slate-400 hover:bg-slate-800/50 hover:text-indigo-300' }}">
                     <div class="p-1.5 rounded-lg mr-3 {{ request()->routeIs('savings-targets.*') ? 'bg-indigo-500 shadow-inner' : 'bg-slate-800 group-hover:bg-slate-700' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

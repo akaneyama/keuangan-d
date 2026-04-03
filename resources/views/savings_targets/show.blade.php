@@ -5,128 +5,147 @@
 
     @php
         $percentage = $savingsTarget->target_amount > 0 ? min(100, ($savingsTarget->current_amount / $savingsTarget->target_amount) * 100) : 0;
-        $statusColor = $savingsTarget->status == 'completed' ? 'green' : 'indigo';
-        $pProgressColor = $percentage >= 80 ? 'green' : 'indigo';
+        $isCompleted = $savingsTarget->status == 'completed';
+        $accentColor = $isCompleted ? 'emerald' : 'indigo';
     @endphp
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Target Info -->
-        <div class="md:col-span-1 space-y-6">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">Informasi Target</h3>
-                    <a href="{{ route('savings-targets.edit', $savingsTarget) }}" class="text-sm text-indigo-600 hover:text-indigo-900 border border-indigo-200 px-3 py-1 rounded">Edit</a>
-                </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Target Info Card -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-900/5 border border-slate-100 p-8 sticky top-24 overflow-hidden relative group">
+                <div class="absolute -right-6 -top-6 w-32 h-32 bg-{{ $accentColor }}-50 rounded-full opacity-50 group-hover:scale-150 transition-all duration-700"></div>
                 
-                <div class="space-y-4">
-                    <div>
-                        <div class="text-sm text-gray-500">Status</div>
-                        <div class="font-semibold text-{{ $statusColor }}-600">{{ ucfirst($savingsTarget->status) }}</div>
+                <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-8">
+                        <div class="p-3 bg-{{ $accentColor }}-50 text-{{ $accentColor }}-600 rounded-2xl">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <a href="{{ route('savings-targets.edit', $savingsTarget) }}" class="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2-2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        </a>
                     </div>
-                    <div>
-                        <div class="text-sm text-gray-500">Target Nominal</div>
-                        <div class="font-bold text-xl text-gray-800">Rp {{ number_format($savingsTarget->target_amount, 0, ',', '.') }}</div>
-                    </div>
-                    <div>
-                        <div class="text-sm text-gray-500">Sudah Terkumpul</div>
-                        <div class="font-bold text-xl text-{{ $pProgressColor }}-600">Rp {{ number_format($savingsTarget->current_amount, 0, ',', '.') }}</div>
-                    </div>
-                    <div>
-                        <div class="text-sm text-gray-500">Kekurangan</div>
-                        <div class="font-semibold text-gray-700">Rp {{ number_format(max(0, $savingsTarget->target_amount - $savingsTarget->current_amount), 0, ',', '.') }}</div>
-                    </div>
-                    <div>
-                        <div class="text-sm text-gray-500">Tenggat Waktu</div>
-                        <div class="font-medium text-gray-800">{{ $savingsTarget->deadline ? $savingsTarget->deadline->format('d M Y') : 'Tanpa batas waktu' }}</div>
-                    </div>
-                    
-                    <div class="pt-4 border-t border-gray-100">
-                        <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
-                            <div class="bg-{{ $pProgressColor }}-600 h-3 rounded-full transition-all duration-500 relative" style="width: {{ $percentage }}%">
-                                @if($percentage >= 80 && $percentage < 100)
-                                    <span class="absolute -top-6 right-0 text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded whitespace-nowrap">Hampir tercapai!</span>
-                                @endif
-                                @if($percentage >= 100)
-                                    <span class="absolute -top-6 right-0 text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded whitespace-nowrap">Target Tercapai 🎉</span>
-                                @endif
+
+                    <div class="space-y-6">
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status Target</p>
+                            <span class="inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest {{ $isCompleted ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-100 text-indigo-600' }}">
+                                {{ $savingsTarget->status }}
+                            </span>
+                        </div>
+
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Terkumpul</p>
+                            <p class="text-3xl font-black text-slate-900">Rp {{ number_format($savingsTarget->current_amount, 0, ',', '.') }}</p>
+                            <p class="text-[10px] font-bold text-slate-400 mt-1 italic">Dari target Rp {{ number_format($savingsTarget->target_amount, 0, ',', '.') }}</p>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-50">
+                            <div class="flex justify-between items-end mb-2">
+                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{{ round($percentage, 1) }}% Tercapai</span>
+                                <span class="text-[10px] font-black text-{{ $accentColor }}-600 uppercase tracking-[0.2em]">Sisa Rp {{ number_format(max(0, $savingsTarget->target_amount - $savingsTarget->current_amount), 0, ',', '.') }}</span>
+                            </div>
+                            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5">
+                                <div class="h-full bg-{{ $accentColor }}-500 rounded-full transition-all duration-1000 shadow-sm" style="width: {{ $percentage }}%"></div>
                             </div>
                         </div>
-                        <div class="text-right text-sm text-gray-600 font-bold">{{ number_format($percentage, 1) }}%</div>
-                    </div>
-                </div>
 
-                <div class="mt-6 pt-4 border-t border-gray-100">
-                    <form action="{{ route('savings-targets.destroy', $savingsTarget) }}" method="POST" onsubmit="return confirm('Menghapus target ini juga akan menghapus semua riwayat setorannya. Lanjutkan?');">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="w-full text-red-600 border border-red-200 hover:bg-red-50 font-medium py-2 rounded-md transition text-sm">Hapus Target</button>
-                    </form>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Tenggat Waktu</p>
+                            <p class="text-sm font-bold text-slate-700">{{ $savingsTarget->deadline ? $savingsTarget->deadline->format('d F Y') : 'Kapanpun Bisa' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 pt-6 border-t border-slate-50">
+                        <form action="{{ route('savings-targets.destroy', $savingsTarget) }}" method="POST" onsubmit="return confirm('Hapus target ini beserta semua riwayat setorannya?');">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="w-full py-4 text-[10px] font-black uppercase tracking-widest text-rose-300 hover:text-rose-600 hover:bg-rose-50 rounded-2xl transition-all">Hapus Rencana Target</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Transactions -->
-        <div class="md:col-span-2 space-y-6">
-            <!-- Add Transaction -->
-            @if($savingsTarget->status != 'completed')
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Setor Tabungan</h3>
-                <form action="{{ route('savings-transactions.store') }}" method="POST" class="flex flex-wrap items-end gap-4">
-                    @csrf
-                    <input type="hidden" name="savings_target_id" value="{{ $savingsTarget->id }}">
-                    
-                    <div class="flex-1 min-w-[200px]">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp)</label>
-                        <input type="number" step="0.01" name="amount" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
-                    </div>
-                    
-                    <div class="w-40">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
-                        <input type="date" name="date" value="{{ date('Y-m-d') }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
-                    </div>
-                    
-                    <div class="flex-1 min-w-[200px]">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
-                        <input type="text" name="note" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Opsional">
-                    </div>
-                    
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 h-10 rounded-md font-medium transition">Setorkan</button>
-                </form>
-            </div>
+        <!-- Transactions Section -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Deposit Form -->
+            @if(!$isCompleted)
+                <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-900/5 border border-slate-100 p-10">
+                    <h3 class="text-xl font-black text-slate-900 mb-8 flex items-center">
+                        <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center mr-3 text-sm italic">+</span>
+                        Setor Tabungan
+                    </h3>
+                    <form action="{{ route('savings-transactions.store') }}" method="POST" class="space-y-6">
+                        @csrf
+                        <input type="hidden" name="savings_target_id" value="{{ $savingsTarget->id }}">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Ambil Dari Dompet</label>
+                                <select name="account_id" class="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-900 shadow-inner" required>
+                                    @foreach($accounts as $acc)
+                                        <option value="{{ $acc->id }}">{{ $acc->name }} (Rp {{ number_format($acc->balance, 0, ',', '.') }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tanggal</label>
+                                <input type="date" name="date" value="{{ date('Y-m-d') }}" class="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-900 shadow-inner" required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Nominal Setoran</label>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 font-black text-slate-400">Rp</span>
+                                <input type="number" name="amount" class="w-full pl-14 pr-5 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-900 shadow-inner" placeholder="0" required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Catatan (Opsional)</label>
+                            <input type="text" name="note" class="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-900 shadow-inner" placeholder="Misal: Sisa uang jajan">
+                        </div>
+
+                        <button type="submit" class="w-full py-4 bg-indigo-600 text-white font-black uppercase tracking-widest rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95">Setorkan Sekarang</button>
+                    </form>
+                </div>
             @endif
 
-            <!-- List -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Riwayat Setoran</h3>
-                <div class="overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
-                                <th class="pb-3 font-medium">Tanggal</th>
-                                <th class="pb-3 font-medium">Nominal</th>
-                                <th class="pb-3 font-medium">Catatan</th>
-                                <th class="pb-3 font-medium text-right">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @forelse($savingsTarget->transactions as $trx)
-                            <tr class="hover:bg-gray-50">
-                                <td class="py-3 text-sm text-gray-700">{{ $trx->date->format('d M Y') }}</td>
-                                <td class="py-3 text-sm font-bold text-green-600">+ Rp {{ number_format($trx->amount, 0, ',', '.') }}</td>
-                                <td class="py-3 text-sm text-gray-500">{{ $trx->note ?: '-' }}</td>
-                                <td class="py-3 text-sm text-right">
-                                    <form action="{{ route('savings-transactions.destroy', $trx) }}" method="POST" onsubmit="return confirm('Batal setoran ini? Saldo target akan berkurang.');">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-medium">Batal</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="py-6 text-center text-gray-500 text-sm">Belum ada riwayat setoran.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+            <!-- History -->
+            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-900/5 border border-slate-100 p-10">
+                <h3 class="text-xl font-black text-slate-900 mb-8">Riwayat Setoran</h3>
+                
+                <div class="space-y-6">
+                    @forelse($savingsTarget->transactions as $trx)
+                        <div class="flex items-center justify-between group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                                    +
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-900">{{ $trx->note ?: 'Setoran Tabungan' }}</h4>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                        {{ $trx->date->format('d M Y') }} • {{ $trx->account->name ?? 'Default' }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-6">
+                                <div class="text-right">
+                                    <p class="text-sm font-black text-emerald-600">Rp {{ number_format($trx->amount, 0, ',', '.') }}</p>
+                                </div>
+                                <form action="{{ route('savings-transactions.destroy', $trx) }}" method="POST" onsubmit="return confirm('Batalkan setoran ini?');">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="p-2 text-slate-300 hover:text-rose-500 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-8">
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest italic">Belum ada setoran masuk</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>

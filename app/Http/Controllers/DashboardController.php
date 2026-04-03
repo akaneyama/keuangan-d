@@ -33,7 +33,9 @@ class DashboardController extends Controller
         
         $totalIncomeOverall = Income::ownedByUser()->sum('amount');
         $totalExpenseOverall = Expense::ownedByUser()->sum('amount');
-        $currentBalance = $totalIncomeOverall - $totalExpenseOverall;
+        
+        // Total Wallet Balance (Sum of all accounts)
+        $currentBalance = \App\Models\Account::ownedByUser()->sum('balance');
         
         // Month over month growth (for month filter)
         $prevMonthIncome = Income::ownedByUser()->whereMonth('date', now()->subMonth()->month)->whereYear('date', now()->subMonth()->year)->sum('amount');
@@ -87,10 +89,29 @@ class DashboardController extends Controller
         $pieLabels = $expensesByCategory->pluck('category.name');
         $pieData = $expensesByCategory->pluck('total');
 
+        // Accounts list
+        $accounts = \App\Models\Account::ownedByUser()->latest()->take(4)->get();
+
+        // Budget Status for current month
+        $budgets = \App\Models\Budget::ownedByUser()
+            ->where('month', now()->month)
+            ->where('year', now()->year)
+            ->with('category')
+            ->get()
+            ->map(function($b) {
+                $b->actual = Expense::ownedByUser()
+                    ->where('category_id', $b->category_id)
+                    ->whereMonth('date', now()->month)
+                    ->whereYear('date', now()->year)
+                    ->sum('amount');
+                return $b;
+            });
+
         return view('dashboard', compact(
             'totalIncome', 'totalExpense', 'currentBalance', 'avgIncomePerMonth',
             'chartMonths', 'chartIncome', 'chartExpense', 'pieLabels', 'pieData', 'filter',
-            'recentTransactions', 'savingsTargets', 'incomeGrowth', 'expenseGrowth'
+            'recentTransactions', 'savingsTargets', 'incomeGrowth', 'expenseGrowth',
+            'accounts', 'budgets'
         ));
     }
 }
