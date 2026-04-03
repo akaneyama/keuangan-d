@@ -36,7 +36,6 @@ class SavingsTargetController extends Controller
             'deadline' => 'nullable|date',
         ]);
         
-        $validated['user_id'] = auth()->id();
         $validated['current_amount'] = 0;
         $validated['status'] = 'ongoing';
 

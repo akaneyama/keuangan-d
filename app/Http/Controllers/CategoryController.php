@@ -35,7 +35,6 @@ class CategoryController extends Controller
             'type' => 'required|in:income,expense',
         ]);
 
-        $validated['user_id'] = auth()->id();
         Category::create($validated);
 
         return redirect()->route('categories.index')->with('success', 'Category created successfully.');

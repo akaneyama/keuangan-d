@@ -42,7 +42,6 @@ class DebtController extends Controller
             'note' => 'nullable|string',
         ]);
 
-        $validated['user_id'] = auth()->id();
         $validated['status'] = 'unpaid';
 
         Debt::create($validated);

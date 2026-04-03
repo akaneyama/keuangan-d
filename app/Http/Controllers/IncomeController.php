@@ -76,7 +76,6 @@ class IncomeController extends Controller
             $validated['receipt'] = $request->file('receipt')->store('receipts', 'public');
         }
         
-        $validated['user_id'] = auth()->id();
         $income = Income::create($validated);
 
         // Update Account Balance
