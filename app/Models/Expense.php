@@ -10,7 +10,7 @@ class Expense extends Model
 {
     use OwnedByUser;
 
-    protected $fillable = ['user_id', 'category_id', 'account_id', 'savings_target_id', 'amount', 'date', 'description'];
+    protected $fillable = ['user_id', 'category_id', 'account_id', 'savings_target_id', 'amount', 'date', 'description', 'receipt'];
 
     public function account(): BelongsTo
     {

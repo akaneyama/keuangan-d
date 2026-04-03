@@ -10,6 +10,7 @@ use App\Http\Controllers\SavingsTargetController;
 use App\Http\Controllers\SavingsTransactionController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\BudgetController;
+use App\Http\Controllers\DebtController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,6 +28,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::resource('savings-targets', SavingsTargetController::class);
     Route::resource('savings-transactions', SavingsTransactionController::class)->only(['store', 'destroy']);
+    
+    Route::resource('debts', DebtController::class);
+    Route::patch('/debts/{debt}/mark-as-paid', [DebtController::class, 'markAsPaid'])->name('debts.mark-as-paid');
 
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/pdf', [ReportController::class, 'exportPdf'])->name('reports.pdf');

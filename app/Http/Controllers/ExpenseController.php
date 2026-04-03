@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Expense;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ExpenseController extends Controller
 {
@@ -71,7 +72,12 @@ class ExpenseController extends Controller
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
             'description' => 'nullable|string',
+            'receipt' => 'nullable|image|max:2048',
         ]);
+        
+        if ($request->hasFile('receipt')) {
+            $validated['receipt'] = $request->file('receipt')->store('receipts', 'public');
+        }
         
         $validated['user_id'] = auth()->id();
         $expense = Expense::create($validated);
@@ -119,7 +125,15 @@ class ExpenseController extends Controller
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
             'description' => 'nullable|string',
+            'receipt' => 'nullable|image|max:2048',
         ]);
+
+        if ($request->hasFile('receipt')) {
+            if ($expense->receipt) {
+                Storage::disk('public')->delete($expense->receipt);
+            }
+            $validated['receipt'] = $request->file('receipt')->store('receipts', 'public');
+        }
 
         // Revert old account balance
         $oldAccount = \App\Models\Account::findOrFail($expense->account_id);
@@ -161,6 +175,10 @@ class ExpenseController extends Controller
         if ($expense->savings_target_id) {
             $target = \App\Models\SavingsTarget::findOrFail($expense->savings_target_id);
             $target->increment('current_amount', $expense->amount);
+        }
+
+        if ($expense->receipt) {
+            Storage::disk('public')->delete($expense->receipt);
         }
 
         $expense->delete();

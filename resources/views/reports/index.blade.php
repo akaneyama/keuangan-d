@@ -56,36 +56,39 @@
     </div>
 
     <!-- Summary Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
-        <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-900/5 border border-slate-100 p-8 relative overflow-hidden group">
-            <div class="absolute -right-6 -top-6 w-24 h-24 bg-emerald-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-900/5 border border-slate-100 p-6 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
             <div class="relative z-10">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Total Pemasukan</h3>
-                <div class="text-3xl font-black text-emerald-600">Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-4">Periode: {{ $monthNames[(int)$month] ?? '...' }} {{ $year }}</p>
+                <h3 class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Total Pemasukan</h3>
+                <div class="text-xl font-black text-emerald-600">Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
             </div>
         </div>
         
-        <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-900/5 border border-slate-100 p-8 relative overflow-hidden group">
-            <div class="absolute -right-6 -top-6 w-24 h-24 bg-rose-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+        <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-900/5 border border-slate-100 p-6 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-16 h-16 bg-rose-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
             <div class="relative z-10">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Total Pengeluaran</h3>
-                <div class="text-3xl font-black text-rose-600">Rp {{ number_format($totalExpense, 0, ',', '.') }}</div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-4">Periode: {{ $monthNames[(int)$month] ?? '...' }} {{ $year }}</p>
+                <h3 class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Total Pengeluaran</h3>
+                <div class="text-xl font-black text-rose-600">Rp {{ number_format($totalExpense, 0, ',', '.') }}</div>
             </div>
         </div>
-        
-        <div class="bg-indigo-600 rounded-[2.5rem] shadow-xl shadow-indigo-600/20 p-8 relative overflow-hidden group border border-indigo-500">
-            <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full group-hover:scale-110 transition-transform"></div>
+
+        <div class="bg-white rounded-[2rem] shadow-xl shadow-indigo-900/5 border border-indigo-100 p-6 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-16 h-16 bg-indigo-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
             <div class="relative z-10">
-                <h3 class="text-[10px] font-black text-indigo-200 uppercase tracking-[0.2em] mb-3">Saldo Bersih (Net)</h3>
-                <div class="text-3xl font-black text-white">Rp {{ number_format($netBalance, 0, ',', '.') }}</div>
-                <div class="mt-4 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full {{ $netBalance >= 0 ? 'bg-emerald-400' : 'bg-rose-400' }} animate-pulse"></span>
-                    <span class="text-[10px] font-bold text-indigo-100 uppercase tracking-widest">
-                        {{ $netBalance >= 0 ? 'Surplus Anggaran' : 'Defisit Anggaran' }}
-                    </span>
+                <h3 class="text-[9px] font-black text-indigo-400 uppercase tracking-[0.2em] mb-2">Hutang & Piutang</h3>
+                <div class="flex flex-col gap-1">
+                    <div class="text-xs font-bold text-rose-500">H: Rp {{ number_format($unpaidDebts, 0, ',', '.') }}</div>
+                    <div class="text-xs font-bold text-emerald-500">P: Rp {{ number_format($unpaidReceivables, 0, ',', '.') }}</div>
                 </div>
+            </div>
+        </div>
+        
+        <div class="bg-indigo-600 rounded-[2rem] shadow-xl shadow-indigo-600/20 p-6 relative overflow-hidden group border border-indigo-500">
+            <div class="absolute -right-4 -top-4 w-16 h-16 bg-white/10 rounded-full group-hover:scale-110 transition-transform"></div>
+            <div class="relative z-10 text-white">
+                <h3 class="text-[9px] font-black text-indigo-200 uppercase tracking-[0.2em] mb-2">Saldo Bersih</h3>
+                <div class="text-xl font-black">Rp {{ number_format($netBalance, 0, ',', '.') }}</div>
             </div>
         </div>
     </div>

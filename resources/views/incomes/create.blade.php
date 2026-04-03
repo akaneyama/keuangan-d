@@ -5,7 +5,7 @@
 
     <div class="max-w-2xl mx-auto">
         <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-100">
-            <form action="{{ isset($income) ? route('incomes.update', $income) : route('incomes.store') }}" method="POST" class="space-y-6">
+            <form action="{{ isset($income) ? route('incomes.update', $income) : route('incomes.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 @if(isset($income)) @method('PUT') @endif
 
@@ -54,6 +54,17 @@
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Catatan (Opsional)</label>
                     <textarea name="description" rows="3" class="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-900 shadow-inner" placeholder="Tulis catatan di sini...">{{ old('description', $income->description ?? '') }}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Lampiran Struk (Opsional)</label>
+                    <input type="file" name="receipt" accept="image/*" 
+                           class="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-900 shadow-inner">
+                    @if(isset($income) && $income->receipt)
+                        <div class="mt-2 text-[10px] font-bold text-indigo-600">
+                            Struk saat ini: <a href="{{ asset('storage/' . $income->receipt) }}" target="_blank" class="underline">Lihat Gambar</a>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="pt-4 flex items-center gap-4">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Income;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class IncomeController extends Controller
 {
@@ -68,7 +69,12 @@ class IncomeController extends Controller
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
             'description' => 'nullable|string',
+            'receipt' => 'nullable|image|max:2048',
         ]);
+        
+        if ($request->hasFile('receipt')) {
+            $validated['receipt'] = $request->file('receipt')->store('receipts', 'public');
+        }
         
         $validated['user_id'] = auth()->id();
         $income = Income::create($validated);
@@ -98,7 +104,15 @@ class IncomeController extends Controller
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
             'description' => 'nullable|string',
+            'receipt' => 'nullable|image|max:2048',
         ]);
+
+        if ($request->hasFile('receipt')) {
+            if ($income->receipt) {
+                Storage::disk('public')->delete($income->receipt);
+            }
+            $validated['receipt'] = $request->file('receipt')->store('receipts', 'public');
+        }
 
         // Revert old account balance
         $oldAccount = \App\Models\Account::findOrFail($income->account_id);
@@ -122,6 +136,10 @@ class IncomeController extends Controller
         if ($income->account_id) {
             $account = \App\Models\Account::findOrFail($income->account_id);
             $account->decrement('balance', $income->amount);
+        }
+
+        if ($income->receipt) {
+            Storage::disk('public')->delete($income->receipt);
         }
 
         $income->delete();

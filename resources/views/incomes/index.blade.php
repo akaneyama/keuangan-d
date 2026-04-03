@@ -98,7 +98,14 @@
                                     <span class="text-base font-black leading-tight">{{ $income->date->format('d') }}</span>
                                 </div>
                                 <div>
-                                    <h4 class="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{{ $income->description ?: 'Tanpa keterangan' }}</h4>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{{ $income->description ?: 'Tanpa keterangan' }}</h4>
+                                        @if($income->receipt)
+                                            <a href="{{ asset('storage/' . $income->receipt) }}" target="_blank" class="p-1 px-1.5 bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-600 hover:text-white transition-all shadow-sm group/receipt" title="Lihat Struk">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                            </a>
+                                        @endif
+                                    </div>
                                     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{{ $income->date->format('Y') }} • {{ $income->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>

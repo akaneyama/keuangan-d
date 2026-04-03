@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\Income;
 use App\Models\Expense;
+use App\Models\Debt;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 
@@ -27,9 +28,12 @@ class FinancialReportExport implements FromView
         $totalExpense = $expenses->sum('amount');
         $netBalance = $totalIncome - $totalExpense;
 
+        $unpaidDebts = Debt::ownedByUser()->where('type', 'debt')->where('status', 'unpaid')->sum('amount');
+        $unpaidReceivables = Debt::ownedByUser()->where('type', 'receivable')->where('status', 'unpaid')->sum('amount');
+
         $month = $this->month;
         $year = $this->year;
 
-        return view('reports.excel', compact('incomes', 'expenses', 'totalIncome', 'totalExpense', 'netBalance', 'month', 'year'));
+        return view('reports.excel', compact('incomes', 'expenses', 'totalIncome', 'totalExpense', 'netBalance', 'month', 'year', 'unpaidDebts', 'unpaidReceivables'));
     }
 }

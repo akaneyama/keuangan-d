@@ -10,7 +10,7 @@ class Income extends Model
 {
     use OwnedByUser;
 
-    protected $fillable = ['user_id', 'category_id', 'account_id', 'amount', 'date', 'description'];
+    protected $fillable = ['user_id', 'category_id', 'account_id', 'amount', 'date', 'description', 'receipt'];
 
     public function account(): BelongsTo
     {
